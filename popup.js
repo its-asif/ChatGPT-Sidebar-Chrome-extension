@@ -2,51 +2,124 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesDiv = document.getElementById("messages");
   messagesDiv.classList.add("loading");
 
-  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-    // Check if tab is undefined or if we can't access it (happens when not on chatgpt.com)
-    if (!tab || !tab.url.includes("chatgpt.com")) {
-      showEmptyState("Please visit <b>ChatGPT</b> to use this extension.");
-      return;
-    }
-
-    chrome.tabs.sendMessage(tab.id, { action: "getMessages" }, (response) => {
-      // Remove loading state
-      messagesDiv.classList.remove("loading");
-      messagesDiv.innerHTML = "";
-
-      // Handle potential errors
-      if (!response) {
-        showEmptyState("Unable to connect. Please refresh the page.");
-        return;
+  // Settings button
+  const settingsBtn = document.getElementById("settingsBtn");
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", () => {
+      if (chrome.runtime.openOptionsPage) {
+        chrome.runtime.openOptionsPage();
+      } else {
+        window.open("settings.html");
       }
+    });
+  }
 
-      // Display messages with staggered animation
-      if (response.messages && response.messages.length > 0) {
-        response.messages.forEach((msg, index) => {
-          const div = document.createElement("div");
-          div.className = "message";
-          div.style.animationDelay = `${index * 0.05}s`;
-          div.textContent = msg.text;
-
-          // Add ripple effect on click
-          div.addEventListener("click", (e) => {
-            // Create ripple effect
-            createRippleEffect(e);
-
-            // Navigate to message location
+  // Helper to render messages with current settings
+  function renderMessages(messages, showIndex, msgBgColor, textColor) {
+    messagesDiv.innerHTML = "";
+    if (messages && messages.length > 0) {
+      messages.forEach((msg, index) => {
+        const div = document.createElement("div");
+        div.className = "message";
+        div.style.animationDelay = `${index * 0.05}s`;
+        div.textContent = showIndex ? `${index + 1}. ${msg.text}` : msg.text;
+        if (msgBgColor) div.style.background = msgBgColor;
+        if (textColor) div.style.color = textColor;
+        div.addEventListener("click", (e) => {
+          createRippleEffect(e);
+          chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
             chrome.tabs.sendMessage(tab.id, {
               action: "scrollToMessage",
               index: msg.index,
             });
           });
-
-          messagesDiv.appendChild(div);
         });
+        messagesDiv.appendChild(div);
+      });
+    } else {
+      showEmptyState("No messages found in this conversation.");
+    }
+    // Set all text color if needed
+    if (textColor) {
+      document.body.style.color = textColor;
+      document.querySelectorAll('.header-title, .empty-state').forEach(el => {
+        el.style.color = textColor;
+      });
+    } else {
+      document.body.style.color = '';
+      document.querySelectorAll('.header-title, .empty-state').forEach(el => {
+        el.style.color = '';
+      });
+    }
+  }
+
+  // Store last loaded messages and settings
+  let lastMessages = [];
+  let lastShowIndex = true;
+  let lastMsgBgColor = '';
+  let lastTextColor = '';
+
+  // Load and apply settings, then fetch and render messages
+  function loadAndRender() {
+    chrome.storage.sync.get(["bgColor", "msgBgColor", "textColor", "showIndex"], (settings) => {
+      if (settings.bgColor) {
+        document.body.classList.add("dynamic-bg");
+        document.body.style.background = settings.bgColor;
       } else {
-        showEmptyState("No messages found in this conversation.");
+        document.body.classList.remove("dynamic-bg");
+        document.body.style.background = "";
       }
+      const showIndex = settings.showIndex !== false;
+      lastShowIndex = showIndex;
+      lastMsgBgColor = settings.msgBgColor || '';
+      lastTextColor = settings.textColor || '';
+
+      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        if (!tab || !tab.url.includes("chatgpt.com")) {
+          showEmptyState("Please visit <b>ChatGPT</b> to use this extension.");
+          return;
+        }
+        chrome.tabs.sendMessage(tab.id, { action: "getMessages" }, (response) => {
+          messagesDiv.classList.remove("loading");
+          if (!response) {
+            showEmptyState("Unable to connect. Please refresh the page.");
+            return;
+          }
+          lastMessages = response.messages || [];
+          renderMessages(lastMessages, lastShowIndex, lastMsgBgColor, lastTextColor);
+        });
+      });
     });
+  }
+
+  // Listen for storage changes and update UI accordingly
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "sync") {
+      let needsRerender = false;
+      if (changes.bgColor) {
+        document.body.classList.add("dynamic-bg");
+        document.body.style.background = changes.bgColor.newValue;
+      }
+      if (changes.msgBgColor) {
+        lastMsgBgColor = changes.msgBgColor.newValue;
+        needsRerender = true;
+      }
+      if (changes.textColor) {
+        lastTextColor = changes.textColor.newValue;
+        needsRerender = true;
+      }
+      if (changes.showIndex) {
+        lastShowIndex = changes.showIndex.newValue !== false;
+        needsRerender = true;
+      }
+      if (needsRerender) {
+        renderMessages(lastMessages, lastShowIndex, lastMsgBgColor, lastTextColor);
+      }
+    }
   });
+
+  // Initial load
+  loadAndRender();
 });
 
 // Function to create ripple effect

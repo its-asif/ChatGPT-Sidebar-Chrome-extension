@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Extension Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-container">
+    <h2>Settings</h2>
+    <label>
+      Popup Background Color:
+      <input type="color" id="bgColorPicker" />
+    </label>
+    <label>
+      Message Background Color:
+      <input type="color" id="msgBgColorPicker" />
+    </label>
+    <label>
+      Text Color (all text):
+      <input type="color" id="textColorPicker" />
+    </label>
+    <label>
+      <input type="checkbox" id="showIndexCheckbox" /> Show index before message
+    </label>
+    <button id="saveBtn">Save</button>
+    <div id="status"></div>
+  </div>
+  <script src="settings.js"></script>
+</body>
+</html>

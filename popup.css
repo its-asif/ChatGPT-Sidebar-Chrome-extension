@@ -1,3 +1,21 @@
+/* Settings button style */
+.settings-btn {
+  background: none;
+  border: none;
+  font-size: 1.3em;
+  cursor: pointer;
+  margin-left: auto;
+  margin-top: 2px;
+  color: #f0f0f0;
+  transition: color 0.2s;
+}
+.settings-btn:hover {
+  color: #10a37f;
+}
+
+body.dynamic-bg {
+  transition: background 0.3s;
+}
 :root {
   --primary-dark: #383838;
   --light-dark: #eff6ff;
@@ -70,8 +88,7 @@ body {
   padding: 10px 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  background-color: #303030;
-  color: white;
+  /* background-color and color set dynamically */
   cursor: pointer;
 }
 

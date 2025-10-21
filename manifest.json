@@ -8,14 +8,16 @@
   "permissions":
   [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [ "https://chatgpt.com/*" ],
 
   "action":
   {
-     "default_popup": "popup.html"
+    "default_popup": "popup.html"
   },
+  "options_page": "settings.html",
   "background":
   {
     "service_worker": "background.js"

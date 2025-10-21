@@ -1,0 +1,34 @@
+.settings-container {
+  font-family: 'Inter', Arial, sans-serif;
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 260px;
+  margin: 32px auto;
+}
+h2 {
+  margin-top: 0;
+}
+label {
+  display: block;
+  margin: 16px 0 8px 0;
+}
+input[type="color"] {
+  margin-left: 10px;
+  vertical-align: middle;
+}
+#saveBtn {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: #10a37f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#status {
+  margin-top: 10px;
+  color: #10a37f;
+  font-size: 0.95em;
+}
