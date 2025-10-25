@@ -21,3 +21,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 });
+

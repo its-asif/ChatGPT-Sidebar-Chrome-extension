@@ -26,7 +26,26 @@
   [
     {
       "matches": ["https://chatgpt.com/*"],
-      "js": ["content.js"]
+      "js": [
+        "content.js",
+        "features/pinned/shared.js",
+        "features/pinned/styles.js",
+        "features/pinned/storage.js",
+        "features/pinned/modal.js",
+        "features/pinned/history.js",
+        "features/pinned/sidebar.js",
+        "features/pinned/init.js"
+      ]
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "features/pinned/modal.html",
+        "features/pinned/styles.css"
+      ],
+      "matches": ["https://chatgpt.com/*"]
     }
   ],
 
