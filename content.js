@@ -22,3 +22,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+// Keyboard shortcut to open popup (configurable)
+let popupShortcut = 'Ctrl+Shift+M';
+function loadShortcut() {
+  chrome.storage.sync.get(['popupShortcut'], (data) => {
+    if (data.popupShortcut) popupShortcut = data.popupShortcut;
+  });
+}
+loadShortcut();
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && changes.popupShortcut) {
+    popupShortcut = changes.popupShortcut.newValue || popupShortcut;
+  }
+});
+
+function matchesShortcut(evt) {
+  const parts = [];
+  if (evt.ctrlKey) parts.push('Ctrl');
+  if (evt.altKey) parts.push('Alt');
+  if (evt.shiftKey) parts.push('Shift');
+  const key = evt.key.length === 1 ? evt.key.toUpperCase() : evt.key;
+  if (!['Control','Shift','Alt','Meta'].includes(key)) parts.push(key);
+  return parts.join('+') === popupShortcut;
+}
+
+document.addEventListener('keydown', (e) => {
+  // Ignore inputs/textareas to not hijack typing
+  const target = e.target;
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+  if (matchesShortcut(e)) {
+    e.preventDefault();
+    chrome.runtime.sendMessage({ action: 'openExtensionPopup' });
+  }
+}, true);
+

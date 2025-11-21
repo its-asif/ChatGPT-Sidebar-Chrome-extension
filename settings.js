@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const status = document.getElementById('status');
   const paletteSelect = document.getElementById('paletteSelect');
   const customColorsContainer = document.getElementById('customColors');
+  const shortcutInput = document.getElementById('shortcutInput');
 
   const PALETTES = {
     'purple': { textColor: '#f6f2f8', msgBgColor: '#54296a', bgColor: '#f6f2f8' },
@@ -50,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load settings (backward compatible)
   chrome.storage.sync.get(['bgColor', 'msgBgColor', 'textColor', 'showIndex', 'palette'], (data) => {
+    chrome.storage.sync.get(['popupShortcut'], (s2) => {
+      shortcutInput.value = s2.popupShortcut || 'Ctrl+Shift+M';
+    });
     const palette = data.palette || 'custom';
     paletteSelect.value = PALETTES[palette] ? palette : 'custom';
     if (paletteSelect.value !== 'custom') {
@@ -74,10 +78,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgBgColor = msgBgColorPicker.value;
     const textColor = textColorPicker.value;
     const showIndex = showIndexCheckbox.checked;
-    const payload = { bgColor, msgBgColor, textColor, showIndex, palette };
+    const popupShortcut = shortcutInput.dataset.valid === 'true' ? shortcutInput.value : (shortcutInput.value || 'Ctrl+Shift+M');
+    const payload = { bgColor, msgBgColor, textColor, showIndex, palette, popupShortcut };
     chrome.storage.sync.set(payload, () => {
       status.textContent = 'Settings saved!';
       setTimeout(() => (status.textContent = ''), 1200);
     });
+  });
+
+  function formatShortcut(evt) {
+    const parts = [];
+    if (evt.ctrlKey) parts.push('Ctrl');
+    if (evt.altKey) parts.push('Alt');
+    if (evt.shiftKey) parts.push('Shift');
+    const key = evt.key.length === 1 ? evt.key.toUpperCase() : evt.key;
+    // Ignore pure modifier presses
+    if (['Control','Shift','Alt','Meta'].includes(key)) return parts.join('+');
+    parts.push(key);
+    return parts.join('+');
+  }
+
+  function validateShortcut(str) {
+    if (!str) return false;
+    const segs = str.split('+');
+    const hasModifier = segs.some(s => ['Ctrl','Alt','Shift'].includes(s));
+    const nonMods = segs.filter(s => !['Ctrl','Alt','Shift'].includes(s));
+    return hasModifier && nonMods.length === 1;
+  }
+
+  shortcutInput.addEventListener('keydown', (e) => {
+    e.preventDefault();
+    const combo = formatShortcut(e);
+    shortcutInput.value = combo;
+    const valid = validateShortcut(combo);
+    shortcutInput.dataset.valid = valid ? 'true' : 'false';
+    shortcutInput.classList.toggle('invalid', !valid);
+  });
+  shortcutInput.addEventListener('blur', () => {
+    const valid = validateShortcut(shortcutInput.value);
+    shortcutInput.dataset.valid = valid ? 'true' : 'false';
+    shortcutInput.classList.toggle('invalid', !valid);
   });
 });
