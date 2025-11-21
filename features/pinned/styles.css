@@ -1,0 +1,16 @@
+/* Modal internal UI */
+.gpt-pinned-modal-header { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.08); }
+.gpt-pinned-modal-title { font-weight:600; font-size:16px; }
+.gpt-pinned-modal-close { background:none; border:none; color:inherit; cursor:pointer; font-size:20px; padding:2px 6px; border-radius:6px; }
+.gpt-pinned-modal-content { flex:1; overflow:auto; padding:12px; }
+.gpt-pinned-list { display:block; }
+.gpt-pinned-empty { opacity:0.9; text-align:center; padding:12px; }
+.gpt-pinned-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:#2b2b2b; margin-bottom:8px; }
+.gpt-pinned-link { color:inherit; text-decoration:none; flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.gpt-pinned-delete { font-size:12px; padding:4px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.18); background:transparent; color:inherit; cursor:pointer; }
+
+/* History pin button */
+#history .gpt-history-pin-btn { padding:2px 2px; font-size:12px; background:transparent; color: currentColor; opacity:0.7; cursor:pointer; }
+#history a:hover .gpt-history-pin-btn { opacity:1; }
+.gpt-history-pin-btn:hover { background: rgba(255,255,255,0.08); }
+#history .gpt-history-pin-btn.is-pinned { opacity:1; }

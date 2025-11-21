@@ -32,3 +32,17 @@ input[type="color"] {
   color: #10a37f;
   font-size: 0.95em;
 }
+input#shortcutInput {
+  margin-left:8px;
+  padding:6px 8px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  font-size:13px;
+  width:140px;
+  background:#fafafa;
+}
+input#shortcutInput.invalid { border-color:#d33; background:#fff2f2; }
+
+.is-hidden{
+  display: none;
+}
