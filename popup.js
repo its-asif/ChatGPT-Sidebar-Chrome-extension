@@ -40,17 +40,18 @@ document.addEventListener("DOMContentLoaded", () => {
       showEmptyState("No messages found in this conversation.");
     }
     // Set all text color if needed
-    if (textColor) {
-      document.body.style.color = textColor;
-      document.querySelectorAll('.header-title, .empty-state').forEach(el => {
-        el.style.color = textColor;
-      });
-    } else {
-      document.body.style.color = '';
-      document.querySelectorAll('.header-title, .empty-state').forEach(el => {
-        el.style.color = '';
-      });
-    }
+      if (textColor) {
+        document.body.style.color = textColor;
+        document.querySelectorAll('.empty-state').forEach(el => { el.style.color = textColor; });
+      } else {
+        document.body.style.color = '';
+        document.querySelectorAll('.empty-state').forEach(el => { el.style.color = ''; });
+      }
+      // Ensure header title keeps msgBgColor override
+      const headerTitle = document.querySelector('.header-title');
+      const settingsBtn = document.getElementById('settingsBtn');
+      if (headerTitle && lastMsgBgColor) headerTitle.style.color = lastMsgBgColor;
+      if (settingsBtn && lastMsgBgColor) settingsBtn.style.color = lastMsgBgColor;
   }
 
   // Store last loaded messages and settings
@@ -75,6 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
       lastTextColor = settings.textColor || '';
 
       chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        // Set header title color to msgBgColor as requested
+        const headerTitle = document.querySelector('.header-title');
+        const settingsBtnEl = document.getElementById('settingsBtn');
+        const chosen = lastMsgBgColor || settings.textColor || '';
+        if (headerTitle) headerTitle.style.color = chosen;
+        if (settingsBtnEl) settingsBtnEl.style.color = chosen;
+
         if (!tab || !tab.url.includes("chatgpt.com")) {
           showEmptyState("Please visit <b>ChatGPT</b> to use this extension.");
           return;
@@ -101,7 +109,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.background = changes.bgColor.newValue;
       }
       if (changes.msgBgColor) {
-        lastMsgBgColor = changes.msgBgColor.newValue;
+        // lastMsgBgColor = changes.msgBgColor.newValue;
+        lastTextColor = changes.textColor ? changes.textColor.newValue : lastTextColor;
+        // Update header title and settings button color immediately
+        const headerTitle = document.querySelector('.header-title');
+        const settingsBtnEl = document.getElementById('settingsBtn');
+        if (headerTitle) headerTitle.style.color = lastTextColor;
+        if (settingsBtnEl) settingsBtnEl.style.color = lastTextColor;
         needsRerender = true;
       }
       if (changes.textColor) {

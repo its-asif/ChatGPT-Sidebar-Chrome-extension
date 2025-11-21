@@ -5,7 +5,7 @@
 
   function getConversationFromAnchor(aEl) {
     const href = aEl.href || aEl.getAttribute('href') || '';
-    const title = (aEl.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 200);
+    const title = (aEl.textContent || '').trim().replace(/[\s📌✔✅]+$/u, '').slice(0, 200);
     let id = '';
     try {
       const url = new URL(href, location.origin);

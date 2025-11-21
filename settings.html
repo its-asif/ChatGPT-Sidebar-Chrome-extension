@@ -8,17 +8,42 @@
   <div class="settings-container">
     <h2>Settings</h2>
     <label>
-      Popup Background Color:
-      <input type="color" id="bgColorPicker" />
+      Color Theme:
+      <select id="paletteSelect">
+        <option value="graphite-calm">Graphite Calm</option>
+        <option value="midnight-blue-soft">Midnight Blue Soft</option>
+        <option value="charcoal-warm">Charcoal Warm</option>
+        <option value="indigo-night">Indigo Night</option>
+        <option value="obsidian-minimal">Obsidian Minimal</option>
+        <option value="soft-mint-charcoal">Soft Mint & Charcoal</option>
+        <option value="cozy-dark-warm-gray">Cozy Dark Mode</option>
+        <option value="pastel-rose-cream">Pastel Rose & Cream</option>
+        <option value="serene-blue-sand">Serene Blue & Sand</option>
+        <option value="matcha-green-minimal">Matcha Green Minimal</option>
+        <option value="classic-bw">Classic Dark</option>
+        <option value="purple">Purple (Light)</option>
+        <option value="purple-dark">Purple (Dark)</option>
+        <option value="orange">Orange (Light)</option>
+        <option value="orange-dark">Orange (Dark)</option>
+        <option value="olive">Olive (Light)</option>
+        <option value="olive-dark">Olive (Dark)</option>
+        <option value="custom">Custom Palette</option>
+      </select>
     </label>
-    <label>
-      Message Background Color:
-      <input type="color" id="msgBgColorPicker" />
-    </label>
-    <label>
-      Text Color (all text):
-      <input type="color" id="textColorPicker" />
-    </label>
+    <div id="customColors">
+      <label>
+        Popup Background Color:
+        <input type="color" id="bgColorPicker" />
+      </label>
+      <label>
+        Message Background Color:
+        <input type="color" id="msgBgColorPicker" />
+      </label>
+      <label>
+        Text Color (all text):
+        <input type="color" id="textColorPicker" />
+      </label>
+    </div>
     <label>
       <input type="checkbox" id="showIndexCheckbox" /> Show index before message
     </label>
