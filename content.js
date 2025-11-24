@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Keyboard shortcut to open popup (configurable)
-let popupShortcut = 'Ctrl+Shift+M';
+let popupShortcut = 'Ctrl+Shift+A';
 function loadShortcut() {
   chrome.storage.sync.get(['popupShortcut'], (data) => {
     if (data.popupShortcut) popupShortcut = data.popupShortcut;

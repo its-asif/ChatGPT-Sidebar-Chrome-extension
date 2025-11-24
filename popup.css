@@ -7,7 +7,7 @@
   cursor: pointer;
   margin-left: auto;
   margin-top: 2px;
-  color: #f0f0f0;
+  color: #3B4636;
   transition: color 0.2s;
 }
 .settings-btn:hover {
@@ -18,11 +18,12 @@ body.dynamic-bg {
   transition: background 0.3s;
 }
 :root {
-  --primary-dark: #383838;
-  --light-dark: #eff6ff;
-  --hover-dark: #c0c0c1;
-  --text-primary: #ffffff;
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  /* Updated default theme: Matcha Green Minimal */
+  --primary-dark: #8AA77B; /* repurpose as accent/dark scroll thumb */
+  --light-dark: #F6F8F5;
+  --hover-dark: #3B4636;
+  --text-primary: #3B4636;
+  --shadow-color: rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -35,7 +36,7 @@ body.dynamic-bg {
 body {
   /* font-family: "Aptos Display"; */
   font-family: 'Inter', Arial, sans-serif;
-  background-color: #212121;
+  background-color: #F6F8F5;
   padding: 8px;
   width: 320px;
   max-height: 450px;
@@ -164,7 +165,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #212121;
+  background: #F6F8F5;
 }
 
 ::-webkit-scrollbar-thumb {

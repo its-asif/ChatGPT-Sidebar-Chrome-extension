@@ -54,6 +54,29 @@ document.addEventListener("DOMContentLoaded", () => {
       if (settingsBtn && lastMsgBgColor) settingsBtn.style.color = lastMsgBgColor;
   }
 
+  // Empty state helper now inside scope, can access latest colors
+  function showEmptyState(message) {
+    messagesDiv.classList.remove("loading");
+    messagesDiv.innerHTML = "";
+
+    const img = document.createElement("img");
+    img.src = chrome.runtime.getURL("assets/deno.png");
+    img.alt = "little deno";
+    img.style.width = "50px";
+    img.style.height = "50px";
+    img.style.display = "block";
+    img.style.margin = "0 auto 0px";
+
+    const emptyDiv = document.createElement("div");
+    emptyDiv.className = "empty-state";
+    emptyDiv.innerHTML = message;
+    // Apply dynamic text color if available
+    if (lastTextColor) emptyDiv.style.color = lastTextColor;
+
+    messagesDiv.appendChild(img);
+    messagesDiv.appendChild(emptyDiv);
+  }
+
   // Store last loaded messages and settings
   let lastMessages = [];
   let lastShowIndex = true;
@@ -63,23 +86,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // Load and apply settings, then fetch and render messages
   function loadAndRender() {
     chrome.storage.sync.get(["bgColor", "msgBgColor", "textColor", "showIndex"], (settings) => {
-      if (settings.bgColor) {
+      // Default theme (Matcha Green Minimal)
+      const DEFAULT_THEME = { bgColor: '#F6F8F5', msgBgColor: '#8AA77B', textColor: '#3B4636' };
+
+      const appliedBg = settings.bgColor || DEFAULT_THEME.bgColor;
+      const appliedMsgBg = settings.msgBgColor || DEFAULT_THEME.msgBgColor;
+      const appliedText = settings.textColor || DEFAULT_THEME.textColor;
+
+      if (appliedBg) {
         document.body.classList.add("dynamic-bg");
-        document.body.style.background = settings.bgColor;
+        document.body.style.background = appliedBg;
       } else {
         document.body.classList.remove("dynamic-bg");
         document.body.style.background = "";
       }
       const showIndex = settings.showIndex !== false;
       lastShowIndex = showIndex;
-      lastMsgBgColor = settings.msgBgColor || '';
-      lastTextColor = settings.textColor || '';
+      lastMsgBgColor = appliedMsgBg;
+      lastTextColor = appliedText;
 
       chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
         // Set header title color to msgBgColor as requested
         const headerTitle = document.querySelector('.header-title');
         const settingsBtnEl = document.getElementById('settingsBtn');
-        const chosen = lastMsgBgColor || settings.textColor || '';
+        const chosen = lastMsgBgColor || lastTextColor || '';
         if (headerTitle) headerTitle.style.color = chosen;
         if (settingsBtnEl) settingsBtnEl.style.color = chosen;
 
@@ -165,24 +195,3 @@ function createRippleEffect(event) {
   }, 600);
 }
 
-// Function to show empty states
-function showEmptyState(message) {
-  const messagesDiv = document.getElementById("messages");
-  messagesDiv.classList.remove("loading");
-  messagesDiv.innerHTML = "";  
-
-  const img = document.createElement("img");
-  img.src = chrome.runtime.getURL("assets/deno.png");
-  img.alt = "little deno";
-  img.style.width = "50px";
-  img.style.height = "50px";
-  img.style.display = "block";
-  img.style.margin = "0 auto 0px";
-
-  const emptyDiv = document.createElement("div");
-  emptyDiv.className = "empty-state";
-  emptyDiv.innerHTML = message;
-
-  messagesDiv.appendChild(img);
-  messagesDiv.appendChild(emptyDiv);
-}

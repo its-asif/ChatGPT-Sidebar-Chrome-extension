@@ -13,7 +13,7 @@ Click on any message to quickly scroll to it in the ChatGPT web interface.
 - In‑page modal (no new window) for managing pinned conversations
 - Customizable color themes: choose from curated palettes (Graphite, Midnight Blue, Indigo Night, Matcha, etc.) or define a custom palette
 - Dynamic live updates when you change theme or preferences
-- Configurable keyboard shortcut (default: `Ctrl+Shift+M`) to open the popup without clicking the extension icon
+- Configurable keyboard shortcut (default: `Ctrl+Shift+A`) to open the popup without clicking the extension icon
 - Lightweight, Manifest V3 compliant
 - Works on [chatgpt.com](https://chatgpt.com); easily adaptable for other domains
 
@@ -32,7 +32,7 @@ Click on any message to quickly scroll to it in the ChatGPT web interface.
 ## Usage
 
 1. Open ChatGPT at [chatgpt.com](https://chatgpt.com).
-2. Press the configured shortcut (`Ctrl+Shift+M` by default) or click the extension icon.
+2. Press the configured shortcut (`Ctrl+Shift+A` by default) or click the extension icon.
 3. Browse the list of “You said:” messages; click any to jump to it.
 4. Pin a conversation from the ChatGPT sidebar history using the 📌 button; open the “Pinned Conversation” entry to view/delete pins.
 5. Open Settings to:

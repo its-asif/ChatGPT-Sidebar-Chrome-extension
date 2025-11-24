@@ -52,16 +52,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load settings (backward compatible)
   chrome.storage.sync.get(['bgColor', 'msgBgColor', 'textColor', 'showIndex', 'palette'], (data) => {
     chrome.storage.sync.get(['popupShortcut'], (s2) => {
-      shortcutInput.value = s2.popupShortcut || 'Ctrl+Shift+M';
+      shortcutInput.value = s2.popupShortcut || 'Ctrl+Shift+A';
     });
-    const palette = data.palette || 'custom';
-    paletteSelect.value = PALETTES[palette] ? palette : 'custom';
+    // Default palette now 'matcha-green-minimal'
+    const palette = data.palette || 'matcha-green-minimal';
+    paletteSelect.value = PALETTES[palette] ? palette : 'matcha-green-minimal';
     if (paletteSelect.value !== 'custom') {
       applyPaletteValues(paletteSelect.value);
     } else {
-      bgColorPicker.value = data.bgColor || '#ffffff';
-      msgBgColorPicker.value = data.msgBgColor || '#303030';
-      textColorPicker.value = data.textColor || '#ffffff';
+      bgColorPicker.value = data.bgColor || '#F6F8F5';
+      msgBgColorPicker.value = data.msgBgColor || '#8AA77B';
+      textColorPicker.value = data.textColor || '#3B4636';
     }
     showIndexCheckbox.checked = data.showIndex !== false;
     updateVisibility();
@@ -78,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgBgColor = msgBgColorPicker.value;
     const textColor = textColorPicker.value;
     const showIndex = showIndexCheckbox.checked;
-    const popupShortcut = shortcutInput.dataset.valid === 'true' ? shortcutInput.value : (shortcutInput.value || 'Ctrl+Shift+M');
+    const popupShortcut = shortcutInput.dataset.valid === 'true' ? shortcutInput.value : (shortcutInput.value || 'Ctrl+Shift+A');
     const payload = { bgColor, msgBgColor, textColor, showIndex, palette, popupShortcut };
     chrome.storage.sync.set(payload, () => {
       status.textContent = 'Settings saved!';
