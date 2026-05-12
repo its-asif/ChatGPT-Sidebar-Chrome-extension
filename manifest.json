@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "author": "Asif Hossain",
-  "name": "ChatGPT Sidebar - My Messages",
-  "version": "1.1",
+  "name": "ChatGPT Pinboard - My Messages",
+  "version": "1.2",
   "description": "Show all my Messages in the popup",
 
   "permissions":
@@ -28,13 +28,14 @@
       "matches": ["https://chatgpt.com/*"],
       "js": [
         "content.js",
-        "features/pinned/shared.js",
-        "features/pinned/styles.js",
-        "features/pinned/storage.js",
-        "features/pinned/modal.js",
-        "features/pinned/history.js",
-        "features/pinned/sidebar.js",
-        "features/pinned/init.js"
+        "selectors.js",
+        "features/chatgpt/pinned/shared.js",
+        "features/chatgpt/pinned/styles.js",
+        "features/chatgpt/pinned/storage.js",
+        "features/chatgpt/pinned/modal.js",
+        "features/chatgpt/pinned/history.js",
+        "features/chatgpt/pinned/sidebar.js",
+        "features/chatgpt/pinned/init.js"
       ]
     }
   ],
@@ -42,8 +43,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "features/pinned/modal.html",
-        "features/pinned/styles.css"
+        "features/chatgpt/pinned/modal.html",
+        "features/chatgpt/pinned/styles.css"
       ],
       "matches": ["https://chatgpt.com/*"]
     }

@@ -28,10 +28,20 @@ document.addEventListener("DOMContentLoaded", () => {
         div.addEventListener("click", (e) => {
           createRippleEffect(e);
           chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-            chrome.tabs.sendMessage(tab.id, {
-              action: "scrollToMessage",
-              index: msg.index,
-            });
+            if (!tab || !tab.id) return;
+            chrome.tabs.sendMessage(
+              tab.id,
+              {
+                action: "scrollToMessage",
+                index: msg.index,
+                text: msg.text,
+              },
+              () => {
+                if (chrome.runtime.lastError) {
+                  console.warn('popup.js: scrollToMessage failed', chrome.runtime.lastError.message);
+                }
+              }
+            );
           });
         });
         messagesDiv.appendChild(div);
@@ -119,6 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         chrome.tabs.sendMessage(tab.id, { action: "getMessages" }, (response) => {
           messagesDiv.classList.remove("loading");
+          if (chrome.runtime.lastError) {
+            console.warn('popup.js: getMessages failed', chrome.runtime.lastError.message);
+            showEmptyState("Unable to connect. Please refresh the page.");
+            return;
+          }
           if (!response) {
             showEmptyState("Unable to connect. Please refresh the page.");
             return;

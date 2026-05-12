@@ -1,4 +1,4 @@
-// Loads and injects CSS for the Pinned Conversations feature
+// Loads and injects CSS for the ChatGPT pinned feature
 (() => {
   const GPTPinned = (window.GPTPinned = window.GPTPinned || {});
   const { CONST } = GPTPinned;

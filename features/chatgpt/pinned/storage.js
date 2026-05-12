@@ -1,4 +1,4 @@
-// Storage helpers and shared utility functions for Pinned Conversations
+// Storage helpers and shared utility functions for ChatGPT pinned conversations
 (() => {
   const GPTPinned = (window.GPTPinned = window.GPTPinned || {});
   const { CONST } = GPTPinned;
@@ -67,7 +67,6 @@
           return !idMatch && !hrefMatch;
         });
         chrome.storage.sync.set({ pinnedConversations: filtered }, () => {
-          // Refresh history pin button states
           setTimeout(() => {
             try { GPTPinned.history && GPTPinned.history.ensureHistoryButtons(); } catch (_) {}
           }, 50);

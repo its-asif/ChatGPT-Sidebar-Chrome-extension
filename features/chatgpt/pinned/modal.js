@@ -1,4 +1,4 @@
-// Modal overlay logic for Pinned Conversations
+// Modal overlay logic for ChatGPT pinned conversations
 (() => {
   const GPTPinned = (window.GPTPinned = window.GPTPinned || {});
   const { CONST } = GPTPinned;
@@ -19,7 +19,7 @@
   }
 
   function openDialog() {
-    if (document.getElementById(CONST.DIALOG_ID) || DIALOG_LOADING) return; // no duplicates
+    if (document.getElementById(CONST.DIALOG_ID) || DIALOG_LOADING) return;
     DIALOG_LOADING = true;
     (GPTPinned.styles && GPTPinned.styles.ensure ? GPTPinned.styles.ensure() : Promise.resolve()).finally(() => {
       const htmlUrl = chrome.runtime.getURL(CONST.MODAL_HTML_PATH);
@@ -54,7 +54,6 @@
               true
             );
           }
-          // Build inner content: header + list
           const header = document.createElement('div');
           header.className = 'gpt-pinned-modal-header';
 
@@ -103,7 +102,6 @@
               left.className = 'gpt-pinned-link';
               left.href = it.href || '#';
               left.textContent = it.title || it.href || it.id || 'Conversation';
-              // left.target = '_blank';
 
               const del = document.createElement('button');
               del.className = 'gpt-pinned-delete';

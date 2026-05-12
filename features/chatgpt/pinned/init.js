@@ -1,4 +1,4 @@
-// Bootstraps the Pinned Conversations feature
+// Bootstraps the ChatGPT pinned feature
 (() => {
   const GPTPinned = (window.GPTPinned = window.GPTPinned || {});
 
