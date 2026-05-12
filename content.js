@@ -1,24 +1,75 @@
 // Listen for request from popup.js to get messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  function findScrollableParent(node) {
+    let current = node && node.parentElement;
+    while (current && current !== document.body) {
+      const style = window.getComputedStyle(current);
+      const canScroll = /(auto|scroll)/.test(style.overflowY) && current.scrollHeight > current.clientHeight;
+      if (canScroll) return current;
+      current = current.parentElement;
+    }
+    return document.scrollingElement || document.documentElement;
+  }
+
+  function scrollTargetIntoView(target) {
+    if (!target) return;
+
+    const scrollParent = findScrollableParent(target);
+    const offset = 120;
+
+    if (scrollParent === document.scrollingElement || scrollParent === document.documentElement) {
+      const rect = target.getBoundingClientRect();
+      const top = window.scrollY + rect.top - offset;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      return;
+    }
+
+    const parentRect = scrollParent.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const top = scrollParent.scrollTop + (targetRect.top - parentRect.top) - offset;
+    scrollParent.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+
   if (request.action === "getMessages") {
-    const elements = document.querySelectorAll('[data-testid^="conversation-turn-"]');
+    const elements = document.querySelectorAll('[data-turn="user"]');
+
+    console.log('content.js: getMessages found user turns', elements.length);
     const myMessages = [];
-    let indx = 1;
     elements.forEach((el, idx) => {
-      // check if the element message starts with "You said:"
-      if (el.innerText.startsWith("You said:")) {
-        let text = el.innerText.replace(/^You said:\s*/, '').split('\n').slice(0, 3).join('\n').trim();
+      const rawText = (el.innerText || el.textContent || '').trim();
+      const text = rawText.split('\n').slice(0, 3).join('\n').trim();
+
+      console.log('content.js: user turn', idx, text.substring(0, 120));
+      if (text) {
         myMessages.push({ index: idx, text });
       }
     });
+    console.log('content.js: returning messages', myMessages.length);
     sendResponse({ messages: myMessages });
   }
 
   if (request.action === "scrollToMessage") {
     const index = request.index;
-    const elements = document.querySelectorAll('[data-testid^="conversation-turn-"]');
-    const target = elements[index];
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+    const elements = document.querySelectorAll('[data-turn="user"]');
+    const normalizedRequestedText = (request.text || '').trim().toLowerCase();
+    let target = elements[index];
+
+    if (!target && normalizedRequestedText) {
+      target = Array.from(elements).find((el) => {
+        const rawText = (el.innerText || el.textContent || '').trim().toLowerCase();
+        return rawText.startsWith(normalizedRequestedText.slice(0, Math.min(normalizedRequestedText.length, 120)));
+      });
+      if (target) {
+        console.log('content.js: found scroll target by text fallback');
+      }
+    }
+
+    if (target) {
+      console.log('content.js: scrolling to user turn', index);
+      scrollTargetIntoView(target);
+    } else {
+      console.warn('content.js: scroll target not found for user index', index, 'count', elements.length);
+    }
   }
 });
 
