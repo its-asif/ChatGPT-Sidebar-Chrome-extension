@@ -24,6 +24,16 @@
     STYLES_PATH: 'features/claude/chatlist/styles.css',
   };
 
+  registry.gemini = {
+    SIDEBAR_SELECTOR: 'nav, aside, [role="navigation"], .sidebar',
+    BTN_CLASS: 'gpt-sidebar-ext-chatlist-gemini',
+    DIALOG_ID: 'gpt-gemini-chatlist-dialog',
+    HISTORY_ITEM_SELECTOR: 'user-query',
+    HISTORY_BTN_CLASS: 'gpt-history-pin-btn-gemini',
+    STYLES_ID: 'gpt-chatlist-styles-gemini',
+    STYLES_PATH: 'features/gemini/chatlist/styles.css',
+  };
+
   registry.get = function get(botName) {
     return registry[botName] || registry.chatgpt || {};
   };

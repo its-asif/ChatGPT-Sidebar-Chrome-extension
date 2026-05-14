@@ -35,7 +35,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.action === "getMessages") {
     const isClaude = location.host.includes('claude.ai');
-    const userSelector = isClaude ? '[data-user-message-bubble="true"]' : '[data-turn="user"]';
+    const isGemini = location.host.includes('gemini.google.com') || location.host.includes('gemini.google');
+    const userSelector = isClaude ? '[data-user-message-bubble="true"]' : (isGemini ? 'user-query' : '[data-turn="user"]');
     const elements = document.querySelectorAll(userSelector);
 
     const myMessages = [];
@@ -53,7 +54,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "scrollToMessage") {
     const index = request.index;
     const isClaude = location.host.includes('claude.ai');
-    const userSelector = isClaude ? '[data-user-message-bubble="true"]' : '[data-turn="user"]';
+    const isGemini = location.host.includes('gemini.google.com') || location.host.includes('gemini.google');
+    const userSelector = isClaude ? '[data-user-message-bubble="true"]' : (isGemini ? 'user-query' : '[data-turn="user"]');
     const elements = document.querySelectorAll(userSelector);
     const normalizedRequestedText = (request.text || '').trim().toLowerCase();
     let target = elements[index];

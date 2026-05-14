@@ -1,0 +1,12 @@
+/* Modal internal UI for Gemini chatlist */
+.gpt-gemini-chatlist-overlay { position:fixed; inset:0; z-index:999999; pointer-events:auto; }
+.gpt-gemini-chatlist-backdrop { position:absolute; inset:0; background:rgba(0,0,0,0.28); }
+.gpt-gemini-chatlist-dialog { position:relative; width:min(720px, calc(100vw - 24px)); max-height:calc(100vh - 96px); margin:48px auto 0; display:flex; flex-direction:column; overflow:hidden; border-radius:14px; background:#fff; box-shadow:0 20px 60px rgba(0,0,0,0.28); outline:none; pointer-events:auto; }
+.gpt-chatlist-modal-header { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid rgba(0,0,0,0.06); }
+.gpt-chatlist-modal-title { font-weight:600; font-size:16px; }
+.gpt-chatlist-modal-close { background:none; border:none; color:inherit; cursor:pointer; font-size:20px; padding:2px 6px; border-radius:6px; }
+.gpt-chatlist-modal-content { flex:1; overflow:auto; padding:12px; }
+.gpt-chatlist-list { display:block; }
+.gpt-chatlist-empty { opacity:0.9; text-align:center; padding:12px; }
+.gpt-chatlist-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px; border:1px solid rgba(0,0,0,0.06); border-radius:8px; background:#fff; margin-bottom:8px; }
+.gpt-chatlist-link { color:inherit; text-decoration:none; flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }

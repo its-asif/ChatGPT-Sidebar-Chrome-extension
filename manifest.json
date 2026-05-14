@@ -11,7 +11,7 @@
     "scripting",
     "storage"
   ],
-  "host_permissions": [ "https://chatgpt.com/*", "https://claude.ai/*" ],
+  "host_permissions": [ "https://chatgpt.com/*", "https://claude.ai/*", "https://gemini.google.com/*" ],
 
   "action":
   {
@@ -36,19 +36,6 @@
         "features/chatgpt/pinned/history.js",
         "features/chatgpt/pinned/sidebar.js",
         "features/chatgpt/pinned/init.js"
-      ]
-    }
-    ,
-    {
-      "matches": ["https://claude.ai/*"],
-      "js": [
-        "content.js",
-        "selectors.js",
-        "features/claude/chatlist/shared.js",
-        "features/claude/chatlist/styles.js",
-        "features/claude/chatlist/modal.js",
-        "features/claude/chatlist/sidebar.js",
-        "features/claude/chatlist/init.js"
       ]
     }
   ],

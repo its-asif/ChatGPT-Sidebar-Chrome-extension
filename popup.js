@@ -130,8 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (headerTitle) headerTitle.style.color = chosen;
         if (settingsBtnEl) settingsBtnEl.style.color = chosen;
 
-        if (!tab || !(tab.url.includes("chatgpt.com") || tab.url.includes("claude.ai"))) {
-          showEmptyState("Please visit <b>ChatGPT</b> or <b>Claude</b> to use this extension.");
+        if (!tab || !(tab.url.includes("chatgpt.com") || tab.url.includes("claude.ai") || tab.url.includes("gemini.google.com"))) {
+          showEmptyState("Please visit <b>ChatGPT</b>, <b>Claude</b> or <b>Gemini</b> to use this extension.");
           return;
         }
 
