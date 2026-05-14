@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "author": "Asif Hossain",
   "name": "ChatBot Pinboard - My Messages",
-  "version": "1.3.0",
-  "description": "Show all my Messages in the popup",
+  "version": "2.0.0",
+  "description": "Show my messages in the popup across ChatGPT, Claude, and Gemini",
 
   "permissions":
   [

@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const msgBgColorPicker = document.getElementById('msgBgColorPicker');
   const textColorPicker = document.getElementById('textColorPicker');
   const showIndexCheckbox = document.getElementById('showIndexCheckbox');
+  const enableCopyPasteCheckbox = document.getElementById('enableCopyPasteCheckbox');
   const saveBtn = document.getElementById('saveBtn');
   const status = document.getElementById('status');
   const paletteSelect = document.getElementById('paletteSelect');
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Load settings (backward compatible)
-  chrome.storage.sync.get(['bgColor', 'msgBgColor', 'textColor', 'showIndex', 'palette'], (data) => {
+  chrome.storage.sync.get(['bgColor', 'msgBgColor', 'textColor', 'showIndex', 'palette', 'enableCopyPasteFeature'], (data) => {
     chrome.storage.sync.get(['popupShortcut'], (s2) => {
       shortcutInput.value = s2.popupShortcut || 'Ctrl+Shift+A';
     });
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       textColorPicker.value = data.textColor || '#3B4636';
     }
     showIndexCheckbox.checked = data.showIndex !== false;
+    enableCopyPasteCheckbox.checked = data.enableCopyPasteFeature !== false;
     updateVisibility();
   });
 
@@ -79,8 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgBgColor = msgBgColorPicker.value;
     const textColor = textColorPicker.value;
     const showIndex = showIndexCheckbox.checked;
+    const enableCopyPasteFeature = enableCopyPasteCheckbox.checked;
     const popupShortcut = shortcutInput.dataset.valid === 'true' ? shortcutInput.value : (shortcutInput.value || 'Ctrl+Shift+A');
-    const payload = { bgColor, msgBgColor, textColor, showIndex, palette, popupShortcut };
+    const payload = { bgColor, msgBgColor, textColor, showIndex, palette, popupShortcut, enableCopyPasteFeature };
     chrome.storage.sync.set(payload, () => {
       status.textContent = 'Settings saved!';
       setTimeout(() => (status.textContent = ''), 1200);

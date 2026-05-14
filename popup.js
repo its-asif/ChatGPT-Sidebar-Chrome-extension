@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const messagesDiv = document.getElementById("messages");
+  const controlsDiv = document.querySelector('.controls');
   messagesDiv.classList.add("loading");
 
   // Settings button
@@ -102,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load and apply settings, then fetch and render messages
   function loadAndRender() {
-    chrome.storage.sync.get(["bgColor", "msgBgColor", "textColor", "showIndex"], (settings) => {
+    chrome.storage.sync.get(["bgColor", "msgBgColor", "textColor", "showIndex", "enableCopyPasteFeature"], (settings) => {
       // Default theme (Matcha Green Minimal)
       const DEFAULT_THEME = { bgColor: '#F6F8F5', msgBgColor: '#8AA77B', textColor: '#3B4636' };
 
@@ -118,9 +119,14 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.background = "";
       }
       const showIndex = settings.showIndex !== false;
+      const enableCopyPasteFeature = settings.enableCopyPasteFeature !== false;
       lastShowIndex = showIndex;
       lastMsgBgColor = appliedMsgBg;
       lastTextColor = appliedText;
+
+      if (controlsDiv) {
+        controlsDiv.style.display = enableCopyPasteFeature ? 'flex' : 'none';
+      }
 
       chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
         // Set header title color to msgBgColor as requested
@@ -181,6 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "sync") {
       let needsRerender = false;
+      if (changes.enableCopyPasteFeature && controlsDiv) {
+        controlsDiv.style.display = changes.enableCopyPasteFeature.newValue !== false ? 'flex' : 'none';
+      }
       if (changes.bgColor) {
         document.body.classList.add("dynamic-bg");
         document.body.style.background = changes.bgColor.newValue;
@@ -211,6 +220,103 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial load
   loadAndRender();
+
+  // Copy / Paste controls
+  const copyBtn = document.getElementById('copyBtn');
+  const pasteAllBtn = document.getElementById('pasteAllBtn');
+  const pasteOneBtn = document.getElementById('pasteOneBtn');
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      if (!lastMessages || lastMessages.length === 0) {
+        alert('No messages to copy');
+        return;
+      }
+      const texts = lastMessages.map(m => m.text);
+      chrome.storage.local.set({ copiedMessages: texts }, () => {
+        copyBtn.textContent = 'Copied';
+        setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
+      });
+    });
+  }
+
+  if (pasteAllBtn) {
+    pasteAllBtn.addEventListener('click', () => {
+      chrome.storage.local.get(['copiedMessages'], (res) => {
+        const msgs = (res && res.copiedMessages) || [];
+        if (!msgs || msgs.length === 0) {
+          alert('No copied messages found. Copy first.');
+          return;
+        }
+        chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+          if (!tab || !tab.id) return;
+
+          function sendPaste() {
+            chrome.tabs.sendMessage(tab.id, { action: 'pasteMessages', messages: msgs, mode: 'all' }, (response) => {
+              const err = chrome.runtime.lastError;
+              if (err) {
+                // Try to inject content script then resend
+                if (chrome.scripting && chrome.scripting.executeScript) {
+                  chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] }, () => {
+                    chrome.tabs.sendMessage(tab.id, { action: 'pasteMessages', messages: msgs, mode: 'all' });
+                  });
+                } else {
+                  alert('Unable to connect to page.');
+                }
+              }
+            });
+          }
+
+          // Ensure content script is present in page
+          if (chrome.scripting && chrome.scripting.executeScript) {
+            chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] }, () => {
+              sendPaste();
+            });
+          } else {
+            sendPaste();
+          }
+        });
+      });
+    });
+  }
+
+  if (pasteOneBtn) {
+    pasteOneBtn.addEventListener('click', () => {
+      chrome.storage.local.get(['copiedMessages'], (res) => {
+        const msgs = (res && res.copiedMessages) || [];
+        if (!msgs || msgs.length === 0) {
+          alert('No copied messages found. Copy first.');
+          return;
+        }
+        chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+          if (!tab || !tab.id) return;
+
+          function sendPasteOne() {
+            chrome.tabs.sendMessage(tab.id, { action: 'pasteMessages', messages: msgs, mode: 'one' }, (response) => {
+              const err = chrome.runtime.lastError;
+              if (err) {
+                if (chrome.scripting && chrome.scripting.executeScript) {
+                  chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] }, () => {
+                    chrome.tabs.sendMessage(tab.id, { action: 'pasteMessages', messages: msgs, mode: 'one' });
+                  });
+                } else {
+                  alert('Unable to connect to page.');
+                }
+              }
+            });
+          }
+
+          if (chrome.scripting && chrome.scripting.executeScript) {
+            chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] }, () => {
+              sendPasteOne();
+            });
+          } else {
+            sendPasteOne();
+          }
+        });
+      });
+    });
+  }
 });
 
 // Function to create ripple effect
