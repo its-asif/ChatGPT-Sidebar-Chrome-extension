@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "author": "Asif Hossain",
-  "name": "ChatGPT Pinboard - My Messages",
-  "version": "1.2",
+  "name": "ChatBot Pinboard - My Messages",
+  "version": "1.3.0",
   "description": "Show all my Messages in the popup",
 
   "permissions":
@@ -11,7 +11,7 @@
     "scripting",
     "storage"
   ],
-  "host_permissions": [ "https://chatgpt.com/*" ],
+  "host_permissions": [ "https://chatgpt.com/*", "https://claude.ai/*" ],
 
   "action":
   {
@@ -38,6 +38,19 @@
         "features/chatgpt/pinned/init.js"
       ]
     }
+    ,
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": [
+        "content.js",
+        "selectors.js",
+        "features/claude/chatlist/shared.js",
+        "features/claude/chatlist/styles.js",
+        "features/claude/chatlist/modal.js",
+        "features/claude/chatlist/sidebar.js",
+        "features/claude/chatlist/init.js"
+      ]
+    }
   ],
 
   "web_accessible_resources": [
@@ -47,6 +60,14 @@
         "features/chatgpt/pinned/styles.css"
       ],
       "matches": ["https://chatgpt.com/*"]
+    }
+    ,
+    {
+      "resources": [
+        "features/claude/chatlist/modal.html",
+        "features/claude/chatlist/styles.css"
+      ],
+      "matches": ["https://claude.ai/*"]
     }
   ],
 

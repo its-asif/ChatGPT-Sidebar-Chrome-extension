@@ -1,4 +1,7 @@
 // Listen for request from popup.js to get messages
+if (!window.__GPT_MESSAGES_CONTENT_LOADED__) {
+  window.__GPT_MESSAGES_CONTENT_LOADED__ = true;
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   function findScrollableParent(node) {
     let current = node && node.parentElement;
@@ -31,26 +34,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === "getMessages") {
-    const elements = document.querySelectorAll('[data-turn="user"]');
+    const isClaude = location.host.includes('claude.ai');
+    const userSelector = isClaude ? '[data-user-message-bubble="true"]' : '[data-turn="user"]';
+    const elements = document.querySelectorAll(userSelector);
 
-    console.log('content.js: getMessages found user turns', elements.length);
     const myMessages = [];
     elements.forEach((el, idx) => {
       const rawText = (el.innerText || el.textContent || '').trim();
       const text = rawText.split('\n').slice(0, 3).join('\n').trim();
 
-      console.log('content.js: user turn', idx, text.substring(0, 120));
       if (text) {
         myMessages.push({ index: idx, text });
       }
     });
-    console.log('content.js: returning messages', myMessages.length);
     sendResponse({ messages: myMessages });
   }
 
   if (request.action === "scrollToMessage") {
     const index = request.index;
-    const elements = document.querySelectorAll('[data-turn="user"]');
+    const isClaude = location.host.includes('claude.ai');
+    const userSelector = isClaude ? '[data-user-message-bubble="true"]' : '[data-turn="user"]';
+    const elements = document.querySelectorAll(userSelector);
     const normalizedRequestedText = (request.text || '').trim().toLowerCase();
     let target = elements[index];
 
@@ -59,16 +63,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const rawText = (el.innerText || el.textContent || '').trim().toLowerCase();
         return rawText.startsWith(normalizedRequestedText.slice(0, Math.min(normalizedRequestedText.length, 120)));
       });
-      if (target) {
-        console.log('content.js: found scroll target by text fallback');
-      }
     }
 
     if (target) {
-      console.log('content.js: scrolling to user turn', index);
       scrollTargetIntoView(target);
-    } else {
-      console.warn('content.js: scroll target not found for user index', index, 'count', elements.length);
     }
   }
 });
@@ -106,4 +104,5 @@ document.addEventListener('keydown', (e) => {
     chrome.runtime.sendMessage({ action: 'openExtensionPopup' });
   }
 }, true);
+}
 

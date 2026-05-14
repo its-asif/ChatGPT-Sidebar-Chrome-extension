@@ -29,19 +29,26 @@ document.addEventListener("DOMContentLoaded", () => {
           createRippleEffect(e);
           chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
             if (!tab || !tab.id) return;
-            chrome.tabs.sendMessage(
-              tab.id,
-              {
-                action: "scrollToMessage",
-                index: msg.index,
-                text: msg.text,
-              },
-              () => {
-                if (chrome.runtime.lastError) {
-                  console.warn('popup.js: scrollToMessage failed', chrome.runtime.lastError.message);
+            function sendScroll() {
+              try {
+                chrome.tabs.sendMessage(tab.id, {
+                  action: "scrollToMessage",
+                  index: msg.index,
+                  text: msg.text,
+                });
+              } catch (_) {}
+            }
+
+            if (chrome.scripting && chrome.scripting.executeScript) {
+              chrome.scripting.executeScript(
+                { target: { tabId: tab.id }, files: ['content.js'] },
+                () => {
+                  sendScroll();
                 }
-              }
-            );
+              );
+            } else {
+              sendScroll();
+            }
           });
         });
         messagesDiv.appendChild(div);
@@ -123,24 +130,49 @@ document.addEventListener("DOMContentLoaded", () => {
         if (headerTitle) headerTitle.style.color = chosen;
         if (settingsBtnEl) settingsBtnEl.style.color = chosen;
 
-        if (!tab || !tab.url.includes("chatgpt.com")) {
-          showEmptyState("Please visit <b>ChatGPT</b> to use this extension.");
+        if (!tab || !(tab.url.includes("chatgpt.com") || tab.url.includes("claude.ai"))) {
+          showEmptyState("Please visit <b>ChatGPT</b> or <b>Claude</b> to use this extension.");
           return;
         }
-        chrome.tabs.sendMessage(tab.id, { action: "getMessages" }, (response) => {
+
+        function handleMessagesResponse(response) {
           messagesDiv.classList.remove("loading");
-          if (chrome.runtime.lastError) {
-            console.warn('popup.js: getMessages failed', chrome.runtime.lastError.message);
-            showEmptyState("Unable to connect. Please refresh the page.");
-            return;
-          }
           if (!response) {
             showEmptyState("Unable to connect. Please refresh the page.");
             return;
           }
           lastMessages = response.messages || [];
           renderMessages(lastMessages, lastShowIndex, lastMsgBgColor, lastTextColor);
-        });
+        }
+
+        function requestMessages(retried = false) {
+          chrome.tabs.sendMessage(tab.id, { action: "getMessages" }, (response) => {
+            const lastError = chrome.runtime.lastError;
+            if (lastError) {
+              const message = lastError.message || '';
+              if (!retried && /Receiving end does not exist/i.test(message) && chrome.scripting && chrome.scripting.executeScript) {
+                chrome.scripting.executeScript(
+                  { target: { tabId: tab.id }, files: ['content.js'] },
+                  () => {
+                    if (chrome.runtime.lastError) {
+                      console.warn('popup.js: content.js injection failed', chrome.runtime.lastError.message);
+                      showEmptyState("Unable to connect. Please refresh the page.");
+                      return;
+                    }
+                    requestMessages(true);
+                  }
+                );
+                return;
+              }
+              console.warn('popup.js: getMessages failed', message);
+              showEmptyState("Unable to connect. Please refresh the page.");
+              return;
+            }
+            handleMessagesResponse(response);
+          });
+        }
+
+        requestMessages(false);
       });
     });
   }
